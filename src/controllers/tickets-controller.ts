@@ -30,10 +30,6 @@ export async function createTicket(req: AuthenticatedRequest, res: Response) {
 
   const { ticketTypeId } = req.body;
 
-  if (!ticketTypeId) {
-    return res.sendStatus(httpStatus.BAD_REQUEST);
-  }
-
   try {
     const ticketTypes = await ticketService.createTicket(userId, ticketTypeId);
 
