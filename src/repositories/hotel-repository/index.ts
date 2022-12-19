@@ -7,6 +7,7 @@ async function findHotels() {
     },
   });
 }
+//add coment
 
 async function findRoomsByHotelId(hotelId: number) {
   return prisma.hotel.findFirst({
