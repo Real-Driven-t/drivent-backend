@@ -10,6 +10,7 @@ export async function listBooking(req: AuthenticatedRequest, res: Response) {
     return res.status(httpStatus.OK).send({
       id: booking.id,
       Room: booking.Room,
+      totalBookings: booking.allBookings,
     });
   } catch (error) {
     return res.sendStatus(httpStatus.NOT_FOUND);
@@ -67,4 +68,3 @@ export async function changeBooking(req: AuthenticatedRequest, res: Response) {
     return res.sendStatus(httpStatus.NOT_FOUND);
   }
 }
-
