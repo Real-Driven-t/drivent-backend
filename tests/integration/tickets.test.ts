@@ -197,6 +197,21 @@ describe("POST /tickets", () => {
       expect(response.status).toEqual(httpStatus.NOT_FOUND);
     });
 
+    it("should respond with status 409 when user alread have a ticket", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      const enrollment = await createEnrollmentWithAddress(user);
+      const ticketType = await createTicketType();
+      await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
+
+      const response = await server
+        .post("/tickets")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ ticketTypeId: ticketType.id });
+
+      expect(response.status).toEqual(httpStatus.CONFLICT);
+    });
+
     it("should respond with status 201 and with ticket data", async () => {
       const user = await createUser();
       const token = await generateValidToken(user);

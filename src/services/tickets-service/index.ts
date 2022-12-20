@@ -1,4 +1,4 @@
-import { notFoundError } from "@/errors";
+import { notFoundError, conflictError } from "@/errors";
 import ticketRepository from "@/repositories/ticket-repository";
 import enrollmentRepository from "@/repositories/enrollment-repository";
 import { TicketStatus } from "@prisma/client";
@@ -31,15 +31,20 @@ async function createTicket(userId: number, ticketTypeId: number) {
     throw notFoundError();
   }
 
+  let ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
+  if (ticket) {
+    throw conflictError;
+  }
+
   const ticketData = {
     ticketTypeId,
     enrollmentId: enrollment.id,
-    status: TicketStatus.RESERVED
+    status: TicketStatus.RESERVED,
   };
 
   await ticketRepository.createTicket(ticketData);
 
-  const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
+  ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
 
   return ticket;
 }
@@ -47,7 +52,7 @@ async function createTicket(userId: number, ticketTypeId: number) {
 const ticketService = {
   getTicketTypes,
   getTicketByUserId,
-  createTicket
+  createTicket,
 };
 
 export default ticketService;
