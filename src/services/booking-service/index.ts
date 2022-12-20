@@ -30,11 +30,12 @@ async function checkValidBooking(roomId: number) {
 
 async function getBooking(userId: number) {
   const booking = await bookingRepository.findByUserId(userId);
+  const allBookings = await bookingRepository.findByRoomId(booking.Room.id);
   if (!booking) {
     throw notFoundError();
   }
 
-  return booking;
+  return { ...booking, allBookings };
 }
 
 async function bookingRoomById(userId: number, roomId: number) {
