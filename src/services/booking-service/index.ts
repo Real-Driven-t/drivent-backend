@@ -55,7 +55,7 @@ async function changeBookingRoomById(userId: number, roomId: number) {
   return bookingRepository.upsertBooking({
     id: booking.id,
     roomId,
-    userId
+    userId,
   });
 }
 
