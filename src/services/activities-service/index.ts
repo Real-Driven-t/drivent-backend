@@ -2,7 +2,6 @@ import activityRepository from "@/repositories/activity-repository";
 import enrollmentRepository from "@/repositories/enrollment-repository";
 import ticketRepository from "@/repositories/ticket-repository";
 import { cannotListActivitiesError, notFoundError } from "@/errors";
-import { date } from "joi";
 
 async function verifyPermission(userId: number) {
   const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
@@ -12,7 +11,7 @@ async function verifyPermission(userId: number) {
 
   const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
 
-  if (!ticket || ticket.status === "RESERVED" || !ticket.TicketType.isRemote) {
+  if (!ticket || ticket.status === "RESERVED" || ticket.TicketType.isRemote) {
     throw cannotListActivitiesError();
   }
 }

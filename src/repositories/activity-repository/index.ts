@@ -1,12 +1,13 @@
 import { prisma } from "@/config";
 
 async function findActivitiesWithLocals(day: Date) {
-  return prisma.activity.findFirst({
-    where: {
-      day,
-    },
+  return prisma.place.findMany({
     include: {
-      Place: true,
+      Activity: {
+        where: {
+          day,
+        },
+      },
     },
   });
 }
