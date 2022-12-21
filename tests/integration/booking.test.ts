@@ -95,7 +95,31 @@ describe("GET /booking", () => {
           hotelId: expect.any(Number),
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
+          Hotel: {
+            id: expect.any(Number),
+            image: expect.any(String),
+            name: expect.any(String),
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
+          },
         },
+        totalBookings: [
+          {
+            id: expect.any(Number),
+            roomId: expect.any(Number),
+            userId: expect.any(Number),
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
+            Room: {
+              id: expect.any(Number),
+              capacity: expect.any(Number),
+              hotelId: expect.any(Number),
+              name: expect.any(String),
+              createdAt: expect.any(String),
+              updatedAt: expect.any(String),
+            },
+          },
+        ],
       });
     });
   });
