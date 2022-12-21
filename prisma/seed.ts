@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import dayjs from "dayjs";
+import { createActivities } from "./activitiesSeed";
 const prisma = new PrismaClient();
 import { createHotels } from "./hotelSeed";
 
@@ -53,6 +54,12 @@ async function main() {
 
   if (!hotel) {
     createHotels();
+  }
+
+  const place = await prisma.place.findFirst({});
+
+  if (!place) {
+    createActivities();
   }
 }
 
