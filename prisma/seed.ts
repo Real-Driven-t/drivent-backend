@@ -47,12 +47,12 @@ async function main() {
 
     const alltypes = await prisma.ticketType.findMany({});
     console.log({ alltypes });
+  }
 
-    const hotel = await prisma.hotel.findFirst({});
+  const hotel = await prisma.hotel.findFirst({});
 
-    if (!hotel) {
-      createHotels();
-    }
+  if (!hotel) {
+    createHotels();
   }
 }
 
