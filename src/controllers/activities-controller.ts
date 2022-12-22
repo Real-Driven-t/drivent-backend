@@ -5,8 +5,8 @@ import httpStatus from "http-status";
 
 export async function getActivities(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
-  const { day } = req.body;
-
+  const { body } = req.params;
+  const day = new Date(body);
   try {
     const activities = await activityService.getActivities(Number(userId), day);
     return res.status(httpStatus.OK).send(activities);

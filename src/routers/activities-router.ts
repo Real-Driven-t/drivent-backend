@@ -4,6 +4,7 @@ import { getActivities, getDaysWithActivities } from "@/controllers";
 import { getActivitiesSchema } from "@/schemas";
 
 const activitiesRouter = Router();
+//validateBody(getActivitiesSchema)
 
 activitiesRouter.all("/*", authenticateToken)
   .get("/", validateBody(getActivitiesSchema), getActivities)
