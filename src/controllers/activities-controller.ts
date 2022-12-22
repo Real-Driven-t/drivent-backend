@@ -17,3 +17,14 @@ export async function getActivities(req: AuthenticatedRequest, res: Response) {
     return res.sendStatus(httpStatus.BAD_REQUEST);
   }
 }
+
+export async function getDaysWithActivities(req: AuthenticatedRequest, res: Response) {
+  const { userId } = req;
+
+  try {
+    const activities = await activityService.getDays(userId);
+    return res.status(200).send(activities);
+  } catch {
+    return res.sendStatus(httpStatus.NOT_FOUND);
+  }
+}

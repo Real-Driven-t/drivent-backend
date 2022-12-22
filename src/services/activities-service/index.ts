@@ -23,8 +23,15 @@ async function getActivities(userId: number, day: Date) {
   return activities;
 }
 
+async function getDays(userId: number) {
+  await verifyPermission(userId);
+  const days = await activityRepository.findDaysWithActivities();
+  return days;
+}
+
 const activityService = {
   getActivities,
+  getDays,
 };
 
 export default activityService;

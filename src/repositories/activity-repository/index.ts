@@ -12,6 +12,12 @@ async function findActivitiesWithLocals(day: Date) {
   });
 }
 
+async function findDaysWithActivities() {
+  return prisma.activity.groupBy({
+    by: ["day"],
+  });
+}
+
 const activityRepository = {
   findActivitiesWithLocals,
 };
