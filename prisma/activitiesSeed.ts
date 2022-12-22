@@ -20,10 +20,10 @@ export async function createActivities() {
   places.forEach(async (e) => {
     for (let i = 1; i <= 3; i++) {
       const start = new Date();
-      start.setHours(0, 9, 0, 0);
+      start.setHours(8 + i, 0, 0, 0);
 
       const duration = new Date();
-      duration.setHours(0, 9 + i, 0, 0);
+      duration.setHours(8 + i + 1, 0, 0, 0);
 
       await prisma.activity.create({
         data: {
