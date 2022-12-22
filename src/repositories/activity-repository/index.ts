@@ -20,6 +20,7 @@ async function findDaysWithActivities() {
 
 const activityRepository = {
   findActivitiesWithLocals,
+  findDaysWithActivities,
 };
 
 export default activityRepository;
