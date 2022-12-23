@@ -32,7 +32,7 @@ const server = supertest(app);
 
 describe("GET /activities", () => {
   it("should respond with status 401 if no token is given", async () => {
-    const response = await server.get("/activities");
+    const response = await server.get("/activities/1");
 
     expect(response.status).toBe(httpStatus.UNAUTHORIZED);
   });
@@ -40,7 +40,7 @@ describe("GET /activities", () => {
   it("should respond with status 401 if given token is not valid", async () => {
     const token = faker.lorem.word();
 
-    const response = await server.get("/activities").set("Authorization", `Bearer ${token}`);
+    const response = await server.get("/activities/1").set("Authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(httpStatus.UNAUTHORIZED);
   });
@@ -49,19 +49,19 @@ describe("GET /activities", () => {
     const userWithoutSession = await createUser();
     const token = jwt.sign({ userId: userWithoutSession.id }, process.env.JWT_SECRET);
 
-    const response = await server.get("/activities").set("Authorization", `Bearer ${token}`);
+    const response = await server.get("/activities/1").set("Authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(httpStatus.UNAUTHORIZED);
   });
 
   describe("when token is valid", () => {
-    it("should respond with status 400 when day is not present in body", async () => {
+    it("should respond with status 400 for invalid day in params", async () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       await createEnrollmentWithAddress(user);
       await createTicketType();
 
-      const response = await server.get("/activities").set("Authorization", `Bearer ${token}`).send({});
+      const response = await server.get("/activities/111").set("Authorization", `Bearer ${token}`).send({});
 
       expect(response.status).toEqual(httpStatus.BAD_REQUEST);
     });
@@ -73,9 +73,7 @@ describe("GET /activities", () => {
       const date = new Date();
       date.setHours(0, 0, 0, 0);
 
-      const response = await server.get("/activities").set("Authorization", `Bearer ${token}`).send({
-        day: date,
-      });
+      const response = await server.get(`/activities/${date}`).set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toEqual(httpStatus.BAD_REQUEST);
     });
@@ -90,9 +88,7 @@ describe("GET /activities", () => {
       const date = new Date();
       date.setHours(0, 0, 0, 0);
 
-      const response = await server.get("/activities").set("Authorization", `Bearer ${token}`).send({
-        day: date,
-      });
+      const response = await server.get(`/activities/${date}`).set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toEqual(httpStatus.BAD_REQUEST);
     });
@@ -105,9 +101,7 @@ describe("GET /activities", () => {
 
       await createTicketTypeRemote();
 
-      const response = await server.get("/activities").set("Authorization", `Bearer ${token}`).send({
-        day: date,
-      });
+      const response = await server.get(`/activities/${date}`).set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toEqual(httpStatus.NOT_FOUND);
     });
@@ -125,9 +119,7 @@ describe("GET /activities", () => {
       const place = await createPlace();
       const activity = await createActivity(place.id);
 
-      const response = await server.get("/activities").set("Authorization", `Bearer ${token}`).send({
-        day: date,
-      });
+      const response = await server.get(`/activities/${date}`).set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toEqual(httpStatus.OK);
       expect(response.body).toEqual([
@@ -165,9 +157,7 @@ describe("GET /activities", () => {
 
       const place = await createPlace();
 
-      const response = await server.get("/activities").set("Authorization", `Bearer ${token}`).send({
-        day: date,
-      });
+      const response = await server.get(`/activities/${date}`).set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toEqual(httpStatus.OK);
       expect(response.body).toEqual([

@@ -4,11 +4,10 @@ import { getActivities, getActivitiesByDay, getDaysWithActivities, postActivity 
 import { getActivitiesSchema, postActivitiesBookingSchema } from "@/schemas";
 
 const activitiesRouter = Router();
-//validateBody(getActivitiesSchema)
 
 activitiesRouter
   .all("/*", authenticateToken)
-  .get("/", validateBody(getActivitiesSchema), getActivities)
+  .get("/:body", getActivities)
   .get("/days", getDaysWithActivities)
   .get("/day/:day", getActivitiesByDay)
   .post("/", validateBody(postActivitiesBookingSchema), postActivity);
