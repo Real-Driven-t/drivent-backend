@@ -29,7 +29,12 @@ async function getPaymentByTicketId(userId: number, ticketId: number) {
 
 async function paymentProcess(ticketId: number, userId: number, cardData: CardPaymentParams) {
   await verifyTicketAndEnrollment(ticketId, userId);
+  const verifyPayment = await paymentRepository.findPaymentByTicketId(ticketId);
 
+  if(verifyPayment) {
+    throw unauthorizedError();
+  }
+  
   const ticket = await ticketRepository.findTickeWithTypeById(ticketId);
 
   const paymentData = {
