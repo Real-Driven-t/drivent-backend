@@ -7,13 +7,16 @@ async function findActivitiesWithLocals(day: Date) {
         where: {
           day,
         },
+        orderBy: {
+          start: "asc",
+        },
         include: {
           _count: {
             select: {
               ActivityBooking: true,
-            }
-          }
-        }  
+            },
+          },
+        },
       },
     },
   });
@@ -24,7 +27,7 @@ async function findDaysWithActivities() {
     by: ["day"],
     orderBy: {
       day: "asc",
-    }
+    },
   });
 }
 
