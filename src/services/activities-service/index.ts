@@ -17,13 +17,6 @@ async function verifyPermission(userId: number) {
   }
 }
 
-async function getActivities(userId: number, day: Date) {
-  await verifyPermission(userId);
-
-  const activities = await activityRepository.findActivitiesWithLocals(day);
-  return activities;
-}
-
 async function getDays(userId: number) {
   await verifyPermission(userId);
   const days = await activityRepository.findDaysWithActivities();
@@ -62,7 +55,6 @@ async function postActivity(userId: number, activityId: number) {
 }
 
 const activityService = {
-  getActivities,
   getDays,
   getDayActivities,
   postActivity,
