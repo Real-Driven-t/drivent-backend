@@ -7,6 +7,13 @@ async function findActivitiesWithLocals(day: Date) {
         where: {
           day,
         },
+        include: {
+          _count: {
+            select: {
+              ActivityBooking: true,
+            }
+          }
+        }  
       },
     },
   });
@@ -15,6 +22,9 @@ async function findActivitiesWithLocals(day: Date) {
 async function findDaysWithActivities() {
   return prisma.activity.groupBy({
     by: ["day"],
+    orderBy: {
+      day: "asc",
+    }
   });
 }
 

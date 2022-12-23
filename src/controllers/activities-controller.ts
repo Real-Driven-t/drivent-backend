@@ -31,6 +31,7 @@ export async function getDaysWithActivities(req: AuthenticatedRequest, res: Resp
     const activities = await activityService.getDays(userId);
     return res.status(200).send(activities);
   } catch (error) {
+    console.log(error);
     if (error.name === "NotFoundError") {
       return res.sendStatus(httpStatus.NOT_FOUND);
     }

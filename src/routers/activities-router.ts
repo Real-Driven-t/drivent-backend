@@ -6,7 +6,6 @@ const activitiesRouter = Router();
 
 activitiesRouter
   .all("/*", authenticateToken)
-  .get("/:body", getActivities)
   .get("/days", getDaysWithActivities)
   .get("/day/:day", getActivitiesByDay);
 
