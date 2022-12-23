@@ -22,9 +22,9 @@ export async function postActivitie(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
   const { activityId } = req.body;
   try {
-    const { activityId: activityBookingId } = await activityService.postActivity(userId, activityId);
+    const { id } = await activityService.postActivity(userId, activityId);
 
-    return res.status(httpStatus.CREATED).send({ activityBookingId });
+    return res.status(httpStatus.CREATED).send({ activityBookingId: id });
   } catch (error) {
     if (error.name === "NotFoundError") {
       return res.sendStatus(httpStatus.NOT_FOUND);
@@ -32,6 +32,8 @@ export async function postActivitie(req: AuthenticatedRequest, res: Response) {
     if (error.name === "ConflictError") {
       return res.sendStatus(httpStatus.CONFLICT);
     }
-    return res.sendStatus(httpStatus.BAD_REQUEST);
+    if (error.name === "cannotListActivitiesError") {
+      return res.sendStatus(httpStatus.BAD_REQUEST);
+    }
   }
 }
