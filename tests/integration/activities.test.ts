@@ -1,3 +1,4 @@
+import { prisma } from "@/config";
 import app, { init } from "@/app";
 import faker from "@faker-js/faker";
 import { TicketStatus } from "@prisma/client";
@@ -14,6 +15,8 @@ import {
   createPlace,
   createActivity,
   createTicketType,
+  createActivityBooking,
+  createActivityWithDayAndStartFixed,
 } from "../factories";
 import { cleanDb, generateValidToken } from "../helpers";
 
@@ -176,6 +179,125 @@ describe("GET /activities", () => {
           Activity: [],
         },
       ]);
+    });
+  });
+});
+
+describe("POST /activities", () => {
+  it("should respond with status 401 if no token is given", async () => {
+    const response = await server.post("/activities");
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it("should respond with status 401 if given token is not valid", async () => {
+    const token = faker.lorem.word();
+
+    const response = await server.post("/activities").set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it("should respond with status 401 if there is no session for given token", async () => {
+    const userWithoutSession = await createUser();
+    const token = jwt.sign({ userId: userWithoutSession.id }, process.env.JWT_SECRET);
+
+    const response = await server.post("/activities").set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  describe("when token is valid", () => {
+    it("should respond with status 201 and id of booking activity", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      const enrollment = await createEnrollmentWithAddress(user);
+      const ticketType = await createTicketTypeWithHotel();
+      const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+      await createPayment(ticket.id, ticketType.price);
+      const place = await createPlace();
+      const activity = await createActivity(place.id);
+
+      const response = await server
+        .post("/activities")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ activityId: activity.id });
+
+      const activityBooking = await prisma.activityBooking.findFirst({});
+
+      expect(response.status).toBe(httpStatus.CREATED);
+      expect(response.body).toEqual({
+        activityBookingId: activityBooking.id,
+      });
+    });
+
+    it("should respond with status 404 when activity do not exist", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      const enrollment = await createEnrollmentWithAddress(user);
+      const ticketType = await createTicketTypeWithHotel();
+      const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+      await createPayment(ticket.id, ticketType.price);
+      const place = await createPlace();
+      const activity = await createActivity(place.id);
+
+      const response = await server
+        .post("/activities")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ activityId: activity.id + 1 });
+
+      expect(response.status).toBe(httpStatus.NOT_FOUND);
+    });
+
+    it("should respond with status 404 when user do not have enrollment", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      await createTicketTypeWithHotel();
+      const place = await createPlace();
+      const activity = await createActivity(place.id);
+
+      const response = await server
+        .post("/activities")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ activityId: activity.id });
+
+      expect(response.status).toBe(httpStatus.NOT_FOUND);
+    });
+
+    it("should respond with status 400 when user have a ticketas 'RESERVED'", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      const enrollment = await createEnrollmentWithAddress(user);
+      const ticketType = await createTicketTypeWithHotel();
+      await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
+      const place = await createPlace();
+      const activity = await createActivity(place.id);
+
+      const response = await server
+        .post("/activities")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ activityId: activity.id });
+
+      expect(response.status).toBe(httpStatus.BAD_REQUEST);
+    });
+
+    it("should respond with status 409 when user tries to register to activities with the same horary and day", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      const enrollment = await createEnrollmentWithAddress(user);
+      const ticketType = await createTicketTypeWithHotel();
+      await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+      const place = await createPlace();
+      const activityOne = await createActivityWithDayAndStartFixed(place.id);
+      const activitytwo = await createActivityWithDayAndStartFixed(place.id);
+      await createActivityBooking(user.id, activityOne.id);
+
+      const response = await server
+        .post("/activities")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ activityId: activitytwo.id });
+
+      expect(response.status).toBe(httpStatus.CONFLICT);
     });
   });
 });

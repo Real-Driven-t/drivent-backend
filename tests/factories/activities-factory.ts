@@ -25,3 +25,19 @@ export function createPlace() {
     },
   });
 }
+
+export function createActivityWithDayAndStartFixed(placeId: number) {
+  const date = new Date("2022-12-22");
+  date.setHours(0, 3, 1, 100);
+
+  return prisma.activity.create({
+    data: {
+      name: faker.name.findName(),
+      day: date,
+      capacity: faker.datatype.number(2),
+      start: date,
+      duration: dayjs().add(2, "hours").toDate(),
+      placeId,
+    },
+  });
+}
