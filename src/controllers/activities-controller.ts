@@ -26,7 +26,6 @@ export async function getActivitiesByDay(req: AuthenticatedRequest, res: Respons
     if (error.name === "NotFoundError") {
       return res.sendStatus(httpStatus.NOT_FOUND);
     }
-    console.log(error);
     return res.sendStatus(httpStatus.BAD_REQUEST);
   }
 }
