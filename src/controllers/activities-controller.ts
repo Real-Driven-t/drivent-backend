@@ -7,6 +7,13 @@ export async function getActivities(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
   const { body } = req.params;
   const day = new Date(body);
+
+  const isValidDate = Date.parse(body);
+
+  if (isNaN(isValidDate)) {
+    return res.sendStatus(httpStatus.BAD_REQUEST);
+  }
+
   try {
     const activities = await activityService.getActivities(Number(userId), day);
     return res.status(httpStatus.OK).send(activities);
