@@ -24,3 +24,31 @@ export async function getActivities(req: AuthenticatedRequest, res: Response) {
     return res.sendStatus(httpStatus.BAD_REQUEST);
   }
 }
+
+export async function getDaysWithActivities(req: AuthenticatedRequest, res: Response) {
+  const { userId } = req;
+  try {
+    const activities = await activityService.getDays(userId);
+    return res.status(200).send(activities);
+  } catch (error) {
+    if (error.name === "NotFoundError") {
+      return res.sendStatus(httpStatus.NOT_FOUND);
+    }
+    return res.sendStatus(httpStatus.BAD_REQUEST);
+  }
+}
+
+export async function getActivitiesByDay(req: AuthenticatedRequest, res: Response) {
+  const { userId } = req;
+  const { day } = req.params;
+  try {
+    const activities = await activityService.getDayActivities(userId, day);
+    return res.status(200).send(activities);
+  } catch (error) {
+    if (error.name === "NotFoundError") {
+      return res.sendStatus(httpStatus.NOT_FOUND);
+    }
+    console.log(error);
+    return res.sendStatus(httpStatus.BAD_REQUEST);
+  }
+}
