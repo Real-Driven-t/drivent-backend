@@ -52,3 +52,23 @@ export async function getActivitiesByDay(req: AuthenticatedRequest, res: Respons
     return res.sendStatus(httpStatus.BAD_REQUEST);
   }
 }
+
+export async function postActivity(req: AuthenticatedRequest, res: Response) {
+  const { userId } = req;
+  const { activityId } = req.body;
+  try {
+    const { id } = await activityService.postActivity(userId, activityId);
+
+    return res.status(httpStatus.CREATED).send({ activityBookingId: id });
+  } catch (error) {
+    if (error.name === "NotFoundError") {
+      return res.sendStatus(httpStatus.NOT_FOUND);
+    }
+    if (error.name === "ConflictError") {
+      return res.sendStatus(httpStatus.CONFLICT);
+    }
+    if (error.name === "cannotListActivitiesError") {
+      return res.sendStatus(httpStatus.BAD_REQUEST);
+    }
+  }
+}
