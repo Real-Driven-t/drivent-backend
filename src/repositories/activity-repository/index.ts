@@ -59,12 +59,24 @@ async function getAllActivitiesFromUser(userId: number) {
   });
 }
 
+async function getUserBookings(userId: number) {
+  return prisma.activityBooking.findMany({
+    where: {
+      userId,
+    },
+    select: {
+      activityId: true,
+    },
+  });
+}
+
 const activityRepository = {
   findActivitiesWithLocals,
   findDaysWithActivities,
   createActivity,
   getActivityById,
   getAllActivitiesFromUser,
+  getUserBookings,
 };
 
 export default activityRepository;
