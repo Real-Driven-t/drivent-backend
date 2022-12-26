@@ -54,8 +54,21 @@ async function postActivity(userId: number, activityId: number) {
   return activityRepository.createActivity(userId, activityId);
 }
 
+async function getUserActivities(userId: number) {
+  await verifyPermission(userId);
+
+  const myActivitiesBookings = await activityRepository.getUserBookings(userId);
+
+  const bookingsIds = myActivitiesBookings.map((e) => {
+    return e.activityId;
+  });
+
+  return bookingsIds;
+}
+
 const activityService = {
   getDays,
+  getUserActivities,
   getDayActivities,
   postActivity,
 };

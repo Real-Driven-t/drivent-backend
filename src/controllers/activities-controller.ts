@@ -50,3 +50,19 @@ export async function postActivity(req: AuthenticatedRequest, res: Response) {
     }
   }
 }
+
+export async function getUserActivities(req: AuthenticatedRequest, res: Response) {
+  const { userId } = req;
+  try {
+    const bookings = await activityService.getUserActivities(userId);
+
+    return res.status(httpStatus.OK).send(bookings);
+  } catch (error) {
+    if (error.name === "NotFoundError") {
+      return res.sendStatus(httpStatus.NOT_FOUND);
+    }
+    if (error.name === "cannotListActivitiesError") {
+      return res.sendStatus(httpStatus.BAD_REQUEST);
+    }
+  }
+}
