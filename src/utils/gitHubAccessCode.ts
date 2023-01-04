@@ -1,8 +1,15 @@
 import { request } from "./request";
 
+type GitHubUser = {
+  email: string;
+  primary: boolean;
+  verified: boolean;
+  visibility: string | boolean;
+};
+
 async function exchangeCodeForAccessToken(code: string): Promise<string> {
   const GITHUB_ACCESS_CODE_URL = "https://github.com/login/oauth/access_token";
-  const GITHUB_USER_URL = "https://api.github.com/user";
+  const GITHUB_USER_URL = "https://api.github.com/user/emails";
 
   const params = {
     code,
@@ -22,9 +29,11 @@ async function exchangeCodeForAccessToken(code: string): Promise<string> {
     },
   });
 
-  const userEmail = userResponse.data.email;
+  const primaryUser = userResponse.data.filter((e: GitHubUser) => {
+    return e.primary === true;
+  });
 
-  return userEmail;
+  return primaryUser[0].email;
 }
 
 export { exchangeCodeForAccessToken };
