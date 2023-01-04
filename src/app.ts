@@ -19,6 +19,7 @@ import {
   bookingRouter,
   roomRouter,
   activitiesRouter,
+  federatedLoginRouter,
 } from "@/routers";
 
 const app = express();
@@ -36,6 +37,7 @@ app
   .use("/booking", bookingRouter)
   .use("/rooms", roomRouter)
   .use("/activities", activitiesRouter)
+  .use("/oauth", federatedLoginRouter)
   .use(handleApplicationErrors);
 
 export function init(): Promise<Express> {
