@@ -152,7 +152,7 @@ model Activity {
     ActivityBooking ActivityBooking[]
     createdAt       DateTime          @default(now())
     updatedAt       DateTime          @updatedAt
-     @@index([day])
+    @@index([day], type: Hash)
 }
 
 model ActivityBooking {
