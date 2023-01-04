@@ -30,12 +30,8 @@ describe("POST /oauth/github/login", () => {
   });
 
   describe("when body is valid", () => {
-    const generateValidBody = () => ({
-      email: faker.internet.email(),
-    });
-
     it("should respond with status 400 when there is no event", async () => {
-      const body = generateValidBody();
+      const body = "objeto com code aqui";
 
       const response = await server.post("/oauth/github/login").send(body);
 
@@ -44,7 +40,7 @@ describe("POST /oauth/github/login", () => {
 
     it("should respond with status 400 when current event did not started yet", async () => {
       const event = await createEvent({ startsAt: dayjs().add(1, "day").toDate() });
-      const body = generateValidBody();
+      const body = "objeto com code aqui";
 
       const response = await server.post("/oauth/github/login").send(body).query({ eventId: event.id });
 
@@ -58,7 +54,9 @@ describe("POST /oauth/github/login", () => {
       });
 
       it("should not return user password on body", async () => {
-        const body = generateValidBody();
+        const body = {
+          code: faker.lorem.word(),
+        };
 
         const response = await server.post("/oauth/github/login").send(body);
 
