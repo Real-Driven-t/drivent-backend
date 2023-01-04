@@ -1,7 +1,6 @@
-import { parse } from "path";
 import { request } from "./request";
 
-async function exchangeCodeForAccessToken(code: string) {
+async function exchangeCodeForAccessToken(code: string): Promise<string> {
   const GITHUB_ACCESS_CODE_URL = "https://github.com/login/oauth/access_token";
   const GITHUB_USER_URL = "https://api.github.com/user";
 
@@ -23,11 +22,9 @@ async function exchangeCodeForAccessToken(code: string) {
     },
   });
 
-  console.log(userResponse.data.email);
-
   const userEmail = userResponse.data.email;
 
-  return { userEmail, token };
+  return userEmail;
 }
 
 export { exchangeCodeForAccessToken };
