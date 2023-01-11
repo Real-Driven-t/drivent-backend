@@ -38,8 +38,14 @@ async function getDayActivities(userId: number, day: string) {
     throw cannotListActivitiesError();
   }
   const newDate = new Date(selectedDay);
-  const activities = await activityRepository.findActivitiesWithLocals(newDate);
-  return activities;
+  const activitiesCache = await redisRepository.getDaysActivities(newDate);
+  if (!activitiesCache) {
+    const activities = await activityRepository.findActivitiesWithLocals(newDate);
+    await redisRepository.insertDaysActivities(newDate, activities);
+    return activities;
+  }
+
+  return activitiesCache;
 }
 
 async function postActivity(userId: number, activityId: number) {
