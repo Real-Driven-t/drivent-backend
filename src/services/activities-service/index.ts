@@ -44,8 +44,7 @@ async function getDayActivities(userId: number, day: string) {
     await redisRepository.insertDaysActivities(newDate, activities);
     return activities;
   }
-
-  return activitiesCache;
+  return JSON.parse(activitiesCache);
 }
 
 async function postActivity(userId: number, activityId: number) {
