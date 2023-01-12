@@ -1,6 +1,6 @@
-import { createClient } from "redis";
+import { createClient, RedisClientType } from "redis";
 
-let redis: any;
+let redis: RedisClientType;
 connectRedis();
 async function connectRedis() {
   try {
