@@ -31,10 +31,10 @@ async function paymentProcess(ticketId: number, userId: number, cardData: CardPa
   await verifyTicketAndEnrollment(ticketId, userId);
   const verifyPayment = await paymentRepository.findPaymentByTicketId(ticketId);
 
-  if(verifyPayment) {
+  if (verifyPayment) {
     throw unauthorizedError();
   }
-  
+
   const ticket = await ticketRepository.findTickeWithTypeById(ticketId);
 
   const paymentData = {
@@ -44,9 +44,7 @@ async function paymentProcess(ticketId: number, userId: number, cardData: CardPa
     cardLastDigits: cardData.number.toString().slice(-4),
   };
 
-  const payment = await paymentRepository.createPayment(ticketId, paymentData);
-
-  await ticketRepository.ticketProcessPayment(ticketId);
+  const payment = await paymentRepository.doPaymentTransaction(ticketId, paymentData);
 
   return payment;
 }
