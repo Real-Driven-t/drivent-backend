@@ -1,6 +1,7 @@
 import activityRepository from "@/repositories/activity-repository";
 import enrollmentRepository from "@/repositories/enrollment-repository";
 import ticketRepository from "@/repositories/ticket-repository";
+import redisRepository from "@/repositories/redis-database-repository";
 import { cannotListActivitiesError, notFoundError, conflictError } from "@/errors";
 import dayjs from "dayjs";
 
@@ -19,8 +20,13 @@ async function verifyPermission(userId: number) {
 
 async function getDays(userId: number) {
   await verifyPermission(userId);
-  const days = await activityRepository.findDaysWithActivities();
-  return days;
+  const daysCache = await redisRepository.getDays();
+  if (!daysCache) {
+    const days = await activityRepository.findDaysWithActivities();
+    await redisRepository.insertDays(days);
+    return days;
+  }
+  return JSON.parse(daysCache);
 }
 
 async function getDayActivities(userId: number, day: string) {
@@ -32,8 +38,13 @@ async function getDayActivities(userId: number, day: string) {
     throw cannotListActivitiesError();
   }
   const newDate = new Date(selectedDay);
-  const activities = await activityRepository.findActivitiesWithLocals(newDate);
-  return activities;
+  const activitiesCache = await redisRepository.getDaysActivities(newDate);
+  if (!activitiesCache) {
+    const activities = await activityRepository.findActivitiesWithLocals(newDate);
+    await redisRepository.insertDaysActivities(newDate, activities);
+    return activities;
+  }
+  return JSON.parse(activitiesCache);
 }
 
 async function postActivity(userId: number, activityId: number) {
